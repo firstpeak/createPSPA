@@ -1,0 +1,25 @@
+{
+  "name": "createpspa",
+  "version": "1.0.0",
+  "description": "generates a set of files formatted as a PSPA CD",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/firstpeak/createPSPA.git"
+  },
+  "keywords": [
+    "pspa",
+    "yearbook",
+    "image",
+    "portrait"
+  ],
+  "author": "jason robertson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/firstpeak/createPSPA/issues"
+  },
+  "homepage": "https://github.com/firstpeak/createPSPA#readme"
+}
