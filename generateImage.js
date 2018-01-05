@@ -1,5 +1,7 @@
 var Buffer = require('buffer').Buffer;
 var jpeg = require('jpeg-js');
+//var im = require('imagemagick')
+
 
 /**
  * Generates an random colored image with specified width, height and quality
