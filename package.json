@@ -25,6 +25,7 @@
   "homepage": "https://github.com/firstpeak/createPSPA#readme",
   "dependencies": {
     "buffer": "^5.0.8",
+    "gm": "^1.23.1",
     "jpeg-js": "^0.3.3",
     "prompt": "^1.0.0"
   },
