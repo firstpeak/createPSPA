@@ -16,8 +16,11 @@ const firstNames = ['Austin','Abraham','Alejandro','Alfonso','Alice','Alton','Am
 var portraitInFolder = './portraits/';
 var imageFolderName = 'images';
 var volumeName =  generateVolumeName();
+
+console.log(process.argv);
+
 var args = process.argv.slice(2);
-if (args.length >1){  parseArgs();};
+if (args.length >0){  parseArgs();};
 var volumeDir = './'+volumeName;
 var imageDir = volumeDir + '/' + imageFolderName;
   fs.mkdirSync(volumeDir);
@@ -35,16 +38,7 @@ var imageDir = volumeDir + '/' + imageFolderName;
   portraitToPSPA(_portraits,volumeDir,'\t');
 
 function parseArgs(){
-  switch(args[2]) {
-    case 'start':
-      //go ahead and do nothing here ... using defaults
-      break;
-    case 'prompt':
-      getInput();
-      break;
-    default:
-      break;
-  }
+    numberTotalStudents = args[0];
 };
 
 function randomIntInc (low, high) {
@@ -140,7 +134,7 @@ function makePortraitImage(iName,v,l,f,g,t){
   //console.log('outFile: ' + outFile);
   gm(rndPort)
     .resize(400)
-    .font("Helvetica.ttf")
+    .font('arial')
     .fontSize(12)
     .drawText(8, 20, v)
     .drawText(8, 30, l)
