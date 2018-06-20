@@ -5,6 +5,10 @@ var fs = require('fs');
 var prompt = require('prompt');
 var util = require('util');
 var gm = require('gm');
+var logUpdate = require('log-update');
+var async = require('async');
+
+const frames = ['-', '\\', '|', '/'];
 
 // default students, grades, teachers counts
 var numberTotalStudents = 75;
@@ -17,7 +21,6 @@ var portraitInFolder = './portraits/';
 var imageFolderName = 'images';
 var volumeName =  generateVolumeName();
 
-console.log(process.argv);
 
 var args = process.argv.slice(2);
 if (args.length >0){  parseArgs();};
@@ -27,15 +30,14 @@ var imageDir = volumeDir + '/' + imageFolderName;
   fs.mkdirSync(imageDir);
 
     _portraits = [];
-    console.log('before createIndexFile_PSPA');
-
     _portraits = createIndexFile_PSPA(numberTotalStudents,numberGrades,numberTeachers);
-
-    console.log('after createIndexFile_PSPA');
 
   //  _portraits.forEach(function(item, index) {console.log(item, index);});
   var portraitLine = '';
   portraitToPSPA(_portraits,volumeDir,'\t');
+
+  console.log('Generated PSPA with '+numberTotalStudents+' students in directory: ');
+  console.log(''+ fs.realpathSync(volumeDir));
 
 function parseArgs(){
     numberTotalStudents = args[0];
@@ -52,9 +54,10 @@ function createIndexFile_PSPA (numTotal,grade,numTeachers) {
     let teachers = [];
     let t = new Teacher();
     let teacherGroupCounts = [];
+    let sumTeachers = grade * numTeachers;
 
     //make up teacher groups
-    if (numTeachers == 0){
+    if (sumTeachers == 0){
       let t = new Teacher();
       //one group with empty string for teacher name
       t.name  = '';
@@ -65,18 +68,18 @@ function createIndexFile_PSPA (numTotal,grade,numTeachers) {
     }
     else{
       //create a teacher name and a group count for each teacher
-      let remaining = numTotal%numTeachers;
-      console.log('remaining: ' + remaining);
-      for (let tg = 0; tg<numTeachers;tg++) {
+      let remaining = numTotal%sumTeachers;
+      //console.log('remaining: ' + remaining);
+      for (let tg = 0; tg<sumTeachers;tg++) {
         let t = new Teacher();
         t.name = lastNames[randomIntInc(0, lastNames.length - 1)];
         //teachers.push(lastNames[randomIntInc(0, lastNames.length - 1)]);
         if (remaining-- > 0){
-          t.count = Math.ceil(numTotal / numTeachers);
+          t.count = Math.ceil(numTotal / sumTeachers);
           //teacherGroupCounts.push(Math.ceil(numTotal / numTeachers));
         }
         else{
-          t.count = Math.floor(numTotal / numTeachers);
+          t.count = Math.floor(numTotal / sumTeachers);
           //teacherGroupCounts.push(Math.floor(numTotal / numTeachers));
         }
         addTeacher(teachers,t);
@@ -84,10 +87,10 @@ function createIndexFile_PSPA (numTotal,grade,numTeachers) {
     }
 
     console.log('generating pspa for:');
-    console.log('volumeName: ' + volumeName);
-    console.log('numtotal: ' + numTotal);
-    console.log('grade: ' + grade);
-    console.log('teachers: ' + numTeachers);
+    console.log('   volumeName: ' + volumeName);
+    console.log('   numtotal: ' + numTotal);
+    console.log('   grade: ' + grade);
+    console.log('   teachers: ' + sumTeachers);
     teacherGroupCounts.forEach(function(item, index) {
         console.log('count for teacher: ', item,teachers[index]);
     });
@@ -100,14 +103,15 @@ function createIndexFile_PSPA (numTotal,grade,numTeachers) {
         for (let i = 0; i < teachers[t].count; i++) {
             //populate portrait
             let p = new Portrait();
+            let gd = 1 + (i%grade);
             p.volumeName = volumeName;
             p.imageFolder = imageFolderName;
             p.lastName = lastNames[randomIntInc(0, lastNames.length - 1)];
             p.firstName = firstNames[randomIntInc(0, firstNames.length - 1)];
-            let id = p.lastName + p.firstName + '_g' + grade + '_t' + t + '_id' + i;
+            let id = p.lastName + p.firstName + '_g' + gd + '_t' + t + '_id' + i;
             p.imageFileName = id + '.jpg';
-            p.grade = grade;
-            p.homeRoom = teachers[t].name+ '_' + grade;
+            p.grade = gd;
+            p.homeRoom = teachers[t].name+ '_' + gd;
             p.period = randomIntInc(1,4);
             p.teacherName = teachers[t].name;
             p.track = '';
@@ -117,12 +121,16 @@ function createIndexFile_PSPA (numTotal,grade,numTeachers) {
             addPortrait(portraits, p);
             //Generate one image
             makePortraitImage(p.imageFileName,p.volumeName,p.lastName,p.firstName,p.grade,p.teacherName);
+            console.log(i);
+            //var frame = frames[i % frames.length];
+            //logUpdate('generating '+ frame);
         }
     }
+    logUpdate.clear();
     return portraits;
 };
 
-function makePortraitImage(iName,v,l,f,g,t){
+function makePortraitImage(iName,volume,last,first,grade,teacher){
   let portraitInList = [];
   //console.log(portraitInFolder);
   fs.readdirSync(portraitInFolder).forEach(file => {
@@ -131,16 +139,16 @@ function makePortraitImage(iName,v,l,f,g,t){
   var rndPort = portraitInFolder + portraitInList[randomIntInc(0,portraitInList.length-1)];
   //console.log('rndPort: ' + rndPort);
   var outFile = imageDir + '/' + iName;
-  //console.log('outFile: ' + outFile);
+  console.log('outFile: ' + outFile);
   gm(rndPort)
     .resize(400)
     .font('arial')
     .fontSize(12)
-    .drawText(8, 20, v)
-    .drawText(8, 30, l)
-    .drawText(8, 40, f)
-    .drawText(8, 50, g)
-    .drawText(8, 60, t)
+    .drawText(8, 20, volume)
+    .drawText(8, 30, last)
+    .drawText(8, 40, first)
+    .drawText(8, 50, grade)
+    .drawText(8, 60, teacher)
     .write(outFile, function (err) {
         if (err) console.log(err);
     });
@@ -158,7 +166,7 @@ function portraitToPSPA(portraits,path,separator){
             portraitLine.push(portraits[person][item]);
         //  portraitLine.push(value)
         });
-        console.log(portraitLine.join(separator));
+        //console.log(portraitLine.join(separator));
         stream.write(portraitLine.join(separator)+'\n');
       });
       stream.end();
@@ -188,7 +196,6 @@ function Portrait() {
 function addPortrait (portraits, p) {portraits.push(p);};
 
 function getInput(){
-  console.log('in: getInput');
   return 2;
     var promptSchema = {
         properties: {

@@ -24,9 +24,11 @@
   },
   "homepage": "https://github.com/firstpeak/createPSPA#readme",
   "dependencies": {
+    "async": "^2.6.1",
     "buffer": "^5.0.8",
     "gm": "^1.23.1",
     "jpeg-js": "^0.3.3",
+    "log-update": "^2.3.0",
     "prompt": "^1.0.0"
   },
   "devDependencies": {}
