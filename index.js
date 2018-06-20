@@ -54,7 +54,7 @@ function createIndexFile_PSPA (numTotal,grade,numTeachers) {
     let teachers = [];
     let t = new Teacher();
     let teacherGroupCounts = [];
-    let sumTeachers = grade * numTeachers;
+    let sumTeachers = numTeachers;
 
     //make up teacher groups
     if (sumTeachers == 0){
@@ -89,7 +89,7 @@ function createIndexFile_PSPA (numTotal,grade,numTeachers) {
     console.log('generating pspa for:');
     console.log('   volumeName: ' + volumeName);
     console.log('   numtotal: ' + numTotal);
-    console.log('   grade: ' + grade);
+    console.log('   grades: ' + grade);
     console.log('   teachers: ' + sumTeachers);
     teacherGroupCounts.forEach(function(item, index) {
         console.log('count for teacher: ', item,teachers[index]);
