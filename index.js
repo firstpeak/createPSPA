@@ -121,7 +121,6 @@ function createIndexFile_PSPA (numTotal,grade,numTeachers) {
             addPortrait(portraits, p);
             //Generate one image
             makePortraitImage(p.imageFileName,p.volumeName,p.lastName,p.firstName,p.grade,p.teacherName);
-            console.log(i);
             //var frame = frames[i % frames.length];
             //logUpdate('generating '+ frame);
         }
@@ -139,7 +138,7 @@ function makePortraitImage(iName,volume,last,first,grade,teacher){
   var rndPort = portraitInFolder + portraitInList[randomIntInc(0,portraitInList.length-1)];
   //console.log('rndPort: ' + rndPort);
   var outFile = imageDir + '/' + iName;
-  console.log('outFile: ' + outFile);
+  //console.log('outFile: ' + outFile);
   gm(rndPort)
     .resize(400)
     .font('arial')
