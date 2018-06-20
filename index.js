@@ -139,6 +139,10 @@ function makePortraitImage(iName,volume,last,first,grade,teacher){
   //console.log('rndPort: ' + rndPort);
   var outFile = imageDir + '/' + iName;
   //console.log('outFile: ' + outFile);
+
+  // TODO: chunk this .write call so we don't run out of system file handles
+    // it is currently limited to about 1020 students
+
   gm(rndPort)
     .resize(400)
     .font('arial')
